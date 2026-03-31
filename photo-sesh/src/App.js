@@ -26,8 +26,8 @@ function App() {
           color: "#c1b2f8",
           margin: 0
         }}>
-          JiggleDuo Photobooth
-        </h1>
+          
+          SweetSnaps Photobooth        </h1>
       </div>
 
       <div style={{

@@ -9,7 +9,7 @@ const frameOptions = [
 ];
 
 const stickerOptions = [
-    "/assets/stickers/leaf.png",
+    "/assets/stickers/bow.png",
     "/assets/stickers/sparkles.png",
     "/assets/stickers/A.png", 
     "/assets/stickers/B.png",
@@ -448,7 +448,7 @@ export default function PhotoBooth() {
                                                     Upload
                                                     <input
                                                         type="file"
-                                                        accept="image /*"
+                                                        accept="image/*"
                                                         onChange={uploadPhoto}
                                                         style={{ display: "none"}}
                                                         />
