@@ -11,32 +11,32 @@ const frameOptions = [
 const stickerOptions = [
     "/assets/stickers/leaf.png",
     "/assets/stickers/sparkles.png",
-    "/assets/stickers/A.png",
+    "/assets/stickers/A.png", 
     "/assets/stickers/B.png",
-    "/assets/stickers/C.png",
-    "/assets/stickers/D.png",
-    "/assets/stickers/E.png",  
-    "/assets/stickers/F.png",
-    "/assets/stickers/G.png",
-    "/assets/stickers/H.png",
-    "/assets/stickers/I.png",
-    "/assets/stickers/J.png",
-    "/assets/stickers/K.png",
-    "/assets/stickers/L.png",
-    "/assets/stickers/M.png",
-    "/assets/stickers/N.png",
-    "/assets/stickers/O.png",
-    "/assets/stickers/P.png",
-    "/assets/stickers/Q.png",
-    "/assets/stickers/R.png",
-    "/assets/stickers/S.png",
-    "/assets/stickers/T.png",
-    "/assets/stickers/U.png",
-    "/assets/stickers/V.png",
-    "/assets/stickers/W.png",
-    "/assets/stickers/X.png",
-    "/assets/stickers/Y.png",
-    "/assets/stickers/Z.png"
+     "/assets/stickers/C.png",
+      "/assets/stickers/D.png",
+       "/assets/stickers/E.png", 
+       "/assets/stickers/F.png", 
+       "/assets/stickers/G.png", 
+       "/assets/stickers/H.png", 
+       "/assets/stickers/I.png",
+        "/assets/stickers/J.png", 
+        "/assets/stickers/K.png", 
+        "/assets/stickers/L.png", 
+        "/assets/stickers/M.png", 
+        "/assets/stickers/N.png", 
+        "/assets/stickers/O.png", 
+        "/assets/stickers/P.png",
+         "/assets/stickers/Q.png",
+          "/assets/stickers/R.png",
+           "/assets/stickers/S.png",
+            "/assets/stickers/T.png", 
+            "/assets/stickers/U.png", 
+            "/assets/stickers/V.png",
+             "/assets/stickers/W.png", 
+             "/assets/stickers/X.png", 
+             "/assets/stickers/Y.png",
+              "/assets/stickers/Z.png"
 ];
 
 const videoConstraints = { width: 953, height: 599, facingMode: "user" };
@@ -158,9 +158,9 @@ export default function PhotoBooth() {
 
         setCanTakePhoto(true);
 
-        setPhotoCount(c=> {
-            const next = c +1;
-            if(next === 4) setMode ("decorate");
+        setPhotoCount(c => {
+            const next = c + 1;
+            if (next === 4) setMode("decorate");
             return next;
         });
     };
@@ -209,25 +209,25 @@ export default function PhotoBooth() {
     };
 
     const redoLastPhoto = () => {
-        if (!photos.length)return;
-        setPhotos(p => p.slice(0,-1));
-        setPhotoCount(c => Math.max(0,c-1));
+        if (!photos.length) return;
+        setPhotos(p => p.slice(0, -1));
+        setPhotoCount(c => Math.max(0, c - 1));
         setCanTakePhoto(true);
     };
 
     const getCoords = e => {
-        const r = canvasRef.current.getboundingClientRect();
-        return{
-            x: (e.cleintx - r.left) * (canvasRef.current.width/r.width),
-            y: (e.clienty - r.top) * (canvasRef.current.height/r.height)
+        const r = canvasRef.current.getBoundingClientRect();
+        return {
+            x: (e.clientX - r.left) * (canvasRef.current.width / r.width),
+            y: (e.clientY - r.top) * (canvasRef.current.height / r.height)
         };
     };
 
-    //drag thy photographiesss
+    // drag photos
     const handleMouseDown = e => {
-        const {x,y} = getCoords(e);
-        if(mode==="photo") {
-            for (let i = photos.length - 1; i >=0; i--) {
+        const { x, y } = getCoords(e);
+        if (mode === "photo") {
+            for (let i = photos.length - 1; i >= 0; i--) {
                 const p = photos[i];
                 const slot = slots[p.slotIndex];
                 const w = p.img.width * p.scale;
@@ -236,26 +236,27 @@ export default function PhotoBooth() {
                 if(
                     x >= slot.x + p.offsetX &&
                     x <= slot.x + p.offsetX + w &&
-                    y>= slot.y + p.offsetY &&
-                    y <=slot.y + p.offsetY + h
+                    y >= slot.y + p.offsetY &&
+                    y <= slot.y + p.offsetY + h
                 ) {
                     setDraggingPhoto(i);
                     setDragOffset({
-                        x: x - slot.x-p.offsetX,
-                        y: y-slot.y - p.offsetY
+                        x: x - slot.x - p.offsetX,
+                        y: y - slot.y - p.offsetY
                     });
                     return;
                 }
+
             }
         }
 
-        if(mode === "decorate") {
-            for(let i = sticker.length-1; i >=0;i--) {
+        if (mode === "decorate") {
+            for(let i = stickers.length - 1; i >= 0; i --){
                 const s = stickers[i];
-                if(x >= s.x && x <=s.x + 150 && y>= s.y && y <= s.y +150) {
+                if (x >= s.x && x <= s.x + 150 && y>= s.y && y <= s.y + 150) {
                     setDraggingSticker(i);
                     setSelectedSticker(i);
-                    setDragOffset({x: x-s.x,y: y-s.y});
+                    setDragOffset({x: x-s.x, y: y-s.y});
                     return;
                 }
             }
@@ -274,59 +275,60 @@ export default function PhotoBooth() {
                 const h = p.img.height * p.scale;
 
                 p.offsetX = x - slot.x - dragOffset.x;
-                p.offsetY = y-slot.y - dragOffset.y;
-                p.offsetX = Math.min(Math.max(p.offsetX, SLOT_WIDTH -w),0);
-                p.offsetY = Math.min(Math.max(p.offsetY,SLOT_HEIGHT -h),0);
+                p.offsetY = y - slot.y - dragOffset.y;
+                p.offsetX = Math.min(Math.max(p.offsetX, SLOT_WIDTH - w), 0);
+                p.offsetY = Math.min(Math.max(p.offsetY, SLOT_HEIGHT - h),0);
+
                 return updated;
             });
         }
 
-        if(draggingSticker !=null && mode === "decorate") {
+        if (draggingSticker != null && mode === "decorate") {
             setStickers(s => {
                 const u = [...s];
-                u[draggingSticker]={
+                u[draggingSticker] = {
                     ...u[draggingSticker],
-                    x: x- dragOffset.x,
-                    y: y- dragOffset.y
+                    x: x - dragOffset.x,
+                    y: y - dragOffset.y
                 };
                 return u;
             });
         }
     };
-     const handleMouseUp = () => {
+
+    const handleMouseUp = () => {
         setDraggingPhoto(null);
         setDraggingSticker(null);
-     };
+    };
 
-     // add thy stickeroosss
-     const addSticker = src => {
+    // add Sticker
+    const addSticker = src => {
         const img = new Image();
         img.src = src;
         img.onload = () =>
-            setStickers(s => [...s,{img, x:400,y:100}]);
-     };
+            setStickers(s => [...s, {img, x: 400, y: 100}]);
+    };
 
-     // delete thy stickeroooos :(
-
-     useEffect(() => {
+    // delete Sticker
+    useEffect(() => {
         const handleKeyDown = e => {
-            if(
-                (e.key === "delete" || e.key === "Backspace") && 
+            if (
+                (e.key === "Delete" || e.key === "Backspace") &&
                 selectedSticker != null &&
                 mode === "decorate"
-            ) {
-                setSticker(s=> s.filter((_,i) => i != selectedSticker));
+            ){
+                setStickers(s => s.filter((_,i) => i != selectedSticker));
                 setSelectedSticker(null);
             }
         };
 
-        window.addEventListener("keydown",handleKeyDown);
-        return () => window.removeEventListener("keydown",handleKeyDown);
-        } , [selectedSticker,mode]);
-        
-        // download thy masterpiece 
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selectedSticker,mode]);
 
- const downloadPhoto = () => {
+    //download
+
+    const downloadPhoto = () => {
         const a = document.createElement("a");
         a.href= canvasRef.current.toDataURL("image.png");
         a.download = "photo-strip.png";
@@ -518,56 +520,52 @@ export default function PhotoBooth() {
     )
 }
 
-//styless
+// styles
 const centerCol = {
-    display:"flex",
+    display: "flex",
     flexDirection: "column",
-    alignItems:"center",
-    gap:20
+    alignItems: "center",
+    gap: 20
 };
 const topBar = {
     width: 700,
     height: 60,
-    marginBottom: 20,
     position: "relative",
-    display:"flex",
-    alignItems:"center",
-    justifyContent:"center",
+    marginBottom: 20,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
 }
 const buttonStyle = {
     padding: "10px 20px",
     fontSize: 20,
-    cursor:"pointer",
+    cursor: "pointer",
     fontFamily: "CantikaCute",
-    color:"#714a8c",
-    border:"2px solid #714a8c",
+    color: "#8c5b4a",
+    border: "2px solid #8c5b4a",
     borderRadius: 8,
     background: "white"
 };
 
-const row = {
-    display:"flex",
-    gap:40,
-    alignItems:"flex-start"
-};
+const row = { display: "flex", gap: 40, alignItems: "flex-start" };
 const frameThumb = {
     width: 180,
-    cursor:"pointer",
+    cursor: "pointer",
     borderRadius: 12,
-    boxShadow: "0 8px 8px rgba(0,0,0,0.15)"    
+    boxShadow: "0 8px 8px rgba(0,0,0,0.15)"
 };
 
-const titleBar ={
+const titleBar = {
     margin: 0,
-    lineHeight:"60px",
-    textAlign: "center",
-    width:"100%",
+    lineHeight: "60px",      
+    textAlign: "center",     
+    width: "100%",            
 }
 
 const mainContent = {
-    height:600,
-    width:700,
-    display:"flex",
-    justifyContent:"center",
+    height: 600, 
+    width: 700,
+    display: "flex",
+    justifyContent: "center",
     alignItems: "flex-start",
 }
