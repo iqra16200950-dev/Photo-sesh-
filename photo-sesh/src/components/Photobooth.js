@@ -11,6 +11,9 @@ const frameOptions = [
 const stickerOptions = [
     "/assets/stickers/bow.png",
     "/assets/stickers/sparkles.png",
+    "/assets/stickers/Cat-1.png",
+    "/assets/stickers/Cat-2.png",
+    "/assets/stickers/Cat-3.png",
     "/assets/stickers/A.png", 
     "/assets/stickers/B.png",
      "/assets/stickers/C.png",
