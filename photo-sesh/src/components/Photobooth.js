@@ -553,5 +553,21 @@ const row = {
 const frameThumb = {
     width: 180,
     cursor:"pointer",
-        
+    borderRadius: 12,
+    boxShadow: "0 8px 8px rgba(0,0,0,0.15)"    
+};
+
+const titleBar ={
+    margin: 0,
+    lineHeight:"60px",
+    textAlign: "center",
+    width:"100%",
+}
+
+const mainContent = {
+    height:600,
+    width:700,
+    display:"flex",
+    justifyContent:"center",
+    alignItems: "flex-start",
 }
