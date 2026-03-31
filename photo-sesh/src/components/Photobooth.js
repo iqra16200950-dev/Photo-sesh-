@@ -166,6 +166,251 @@ export default function PhotoBooth() {
     };
 
     const takePhotoNow = () => {
-        const src = webcamRef.current,hetScreenshot();
+        const src = webcamRef.current.getScreenshot();
+        if (!src) return;
+        const img = new Image();
+        img.src = src;
+        img.onload = () => addPhoto(img);
+    };
+
+    const capturePhoto = () => {
+        if (!canTakePhoto || countdown !== null) return;
+
+        setCanTakePhoto(false);
+        setCountdown(3);
+
+        let current = 3;
+        const interval = setInterval(() => {
+            current -= 1;
+
+            if (current === 0) {
+                clearInterval(interval);
+                setCountdown(null);
+                takePhotoNow();
+            } else {
+                setCountdown(current);
+            }
+        }, 1000);
+    };
+
+    const uploadPhoto = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.src = reader.result;
+            img.onload = () => addPhoto(img);
+        };
+
+        reader.readAsDataURL(file);
+        e.target.value = "";
+    };
+
+    const redoLastPhoto = () => {
+        if (!photos.length)return;
+        setPhotos(p => p.slice(0,-1));
+        setPhotoCount(c => Math.max(0,c-1));
+        setCanTakePhoto(true);
+    };
+
+    const getCoords = e => {
+        const r = canvasRef.current.getboundingClientRect();
+        return{
+            x: (e.cleintx - r.left) * (canvasRef.current.width/r.width),
+            y: (e.clienty - r.top) * (canvasRef.current.height/r.height)
+        };
+    };
+
+    //drag thy photographiesss
+    const handleMouseDown = e => {
+        const {x,y} = getCoords(e);
+        if(mode==="photo") {
+            for (let i = photos.length - 1; i >=0; i--) {
+                const p = photos[i];
+                const slot = slots[p.slotIndex];
+                const w = p.img.width * p.scale;
+                const h = p.img.height * p.scale;
+
+                if(
+                    x >= slot.x + p.offsetX &&
+                    x <= slot.x + p.offsetX + w &&
+                    y>= slot.y + p.offsetY &&
+                    y <=slot.y + p.offsetY + h
+                ) {
+                    setDraggingPhoto(i);
+                    setDragOffset({
+                        x: x - slot.x-p.offsetX,
+                        y: y-slot.y - p.offsetY
+                    });
+                    return;
+                }
+            }
+        }
+
+        if(mode === "decorate") {
+            for(let i = sticker.length-1; i >=0;i--) {
+                const s = stickers[i];
+                if(x >= s.x && x <=s.x + 150 && y>= s.y && y <= s.y +150) {
+                    setDraggingSticker(i);
+                    setSelectedSticker(i);
+                    setDragOffset({x: x-s.x,y: y-s.y});
+                    return;
+                }
+            }
+        }
+    };
+
+    const handleMouseMove = e => {
+        const {x,y} = getCoords(e);
+
+        if (draggingPhoto !== null && mode === "photo") {
+            setPhotos(prev => {
+                const updated = [...prev];
+                const p = updated[draggingPhoto];
+                const slot = slots[p.slotIndex];
+                const w = p.img.width * p.scale;
+                const h = p.img.height * p.scale;
+
+                p.offsetX = x - slot.x - dragOffset.x;
+                p.offsetY = y-slot.y - dragOffset.y;
+                p.offsetX = Math.min(Math.max(p.offsetX, SLOT_WIDTH -w),0);
+                p.offsetY = Math.min(Math.max(p.offsetY,SLOT_HEIGHT -h),0);
+                return updated;
+            });
+        }
+
+        if(draggingSticker !=null && mode === "decorate") {
+            setStickers(s => {
+                const u = [...s];
+                u[draggingSticker]={
+                    ...u[draggingSticker],
+                    x: x- dragOffset.x,
+                    y: y- dragOffset.y
+                };
+                return u;
+            });
+        }
+    };
+     const handleMouseUp = () => {
+        setDraggingPhoto(null);
+        setDraggingSticker(null);
+     };
+
+     // add thy stickeroosss
+     const addSticker = src => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () =>
+            setStickers(s => [...s,{img, x:400,y:100}]);
+     };
+
+     // delete thy stickeroooos :(
+
+     useEffect(() => {
+        const handleKeyDown = e => {
+            if(
+                (e.key === "delete" || e.key === "Backspace") && 
+                selectedSticker != null &&
+                mode === "decorate"
+            ) {
+                setSticker(s=> s.filter((_,i) => i != selectedSticker));
+                setSelectedSticker(null);
+            }
+        };
+
+        window.addEventListener("keydown",handleKeyDown);
+        return () => window.removeEventListener("keydown",handleKeyDown);
+        } , [selectedSticker,mode]);
         
-    }
+        // download thy masterpiece 
+
+        const downloadPhoto = () => {
+            const a = document.createElement("a");
+             a.href= canvasRef.current.toDataURL("image.");
+             a.download = "photo-strip.png";
+             a.click();        
+        };
+
+        return(
+            <div style={centerCol}>
+                {/* topito bar with bck btn nd texttt*/}
+               <div style={topBar}>
+                {selectedFrame && (
+                    <button
+                        style={{
+                            ...buttonStyle,
+                            position: "absolute",
+                            left: 0,
+                            top: 10,
+                            height: 40,
+                            padding: "0 16px",
+                            lineHeight: "40px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    onClick={handleBack}
+                    > ← Back</button>
+                )}
+
+                <h1 style={titleBar}>
+                    {!selectedFrame
+                        ? "₊✩‧₊˚ Select a frame౨ৎ ˚₊✩‧₊"
+                        : mode === "photo"
+                            ? "⋆｡‧˚ʚ Smile :)ɞ˚‧｡⋆"
+                            : ". ݁₊ ⊹ . ݁Let’s decorate . ⊹ ₊ ݁."}
+
+                </h1>
+            </div>
+            <div style={mainContent} >
+                {!selectedFrame ? (
+                    <div style={{ display: "flex", gap: 24 }}>
+                        {frameOptions.map((src) => {
+                            const isSelected = selectedFrame === src;
+
+                            return (
+                                <img
+                                    key={src}
+                                    src={src}
+                                    alt="frame"
+                                    onClick={() => setSelectedFrame(src)}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "scale(1.08)";
+                                        e.currentTarget.style.boxShadow = "0 12px 30px rgba(255,122,162,0.45)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "scale(1)";
+                                        e.currentTarget.style.boxShadow = frameThumb.boxShadow;
+
+                                    }}
+                                    style={{
+                                        ...frameThumb,
+                                        transform: isSelected ? "scale(1.08)" : "scale(1)",
+                                        transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                                        boxShadow: isSelected ? "0 12px 30px rgba(255,122,162,0.45)" : frameThumb.boxShadow,
+                                    }}
+
+                                />
+                            )
+                        })}
+                    </div>
+                ) : (
+                    <div style={row}>
+                        <div>
+                            {mode === "photo" &&(
+                                <>
+                                   <div style= {{position:"relative",width:400}}>
+                                    {/* webcammyyy*/}
+                                    <Webcam
+                                        audio={false}
+                                        ref={webcamRef}
+                                        screenshotFormat="image/png"
+                                        videoConstraints = {videoConstraints}
+                                        mirrored={true}
+                                        style={{width:"100%",borderRadius : 12}}
+                                        />
+                            )}
+                        </div>
+                    </div>
