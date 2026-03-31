@@ -326,17 +326,17 @@ export default function PhotoBooth() {
         
         // download thy masterpiece 
 
-        const downloadPhoto = () => {
-            const a = document.createElement("a");
-             a.href= canvasRef.current.toDataURL("image.");
-             a.download = "photo-strip.png";
-             a.click();        
-        };
+ const downloadPhoto = () => {
+        const a = document.createElement("a");
+        a.href= canvasRef.current.toDataURL("image.png");
+        a.download = "photo-strip.png";
+        a.click();
+    };
 
-        return(
-            <div style={centerCol}>
-                {/* topito bar with bck btn nd texttt*/}
-               <div style={topBar}>
+    return (
+        <div style={centerCol}>
+            {/* top bar with back btn and text */}
+            <div style={topBar}>
                 {selectedFrame && (
                     <button
                         style={{
@@ -399,18 +399,159 @@ export default function PhotoBooth() {
                 ) : (
                     <div style={row}>
                         <div>
-                            {mode === "photo" &&(
+                            {mode === "photo" && (
                                 <>
-                                   <div style= {{position:"relative",width:400}}>
-                                    {/* webcammyyy*/}
-                                    <Webcam
-                                        audio={false}
-                                        ref={webcamRef}
-                                        screenshotFormat="image/png"
-                                        videoConstraints = {videoConstraints}
-                                        mirrored={true}
-                                        style={{width:"100%",borderRadius : 12}}
-                                        />
+                                    <div style= {{position: "relative", width: 400 }}>
+                                        {/* Webcam */}
+                                        <Webcam
+                                            audio={false}
+                                            ref={webcamRef}
+                                            screenshotFormat="image/png"
+                                            videoConstraints = {videoConstraints}
+                                            mirrored = {true}
+                                            style={{ width: "100%", borderRadius: 12}}
+                                            />
+
+                                        {/* Overlay countdown */}
+
+                                        {countdown != null && (
+                                            <div style = {{
+                                                position: "absolute",
+                                                inset: 0,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontSize: 96,
+                                                fontWeight: "bold",
+                                                color: "white",
+                                                textShadow: "0 4px 20px rgba(0,0,0,0.6)",
+                                                background: "rgba(0,0,0,0.25)",
+                                                borderRadius: 12,
+                                                pointerEvents: "none",
+                                            }}
+                                            >
+                                                {countdown}
+                                                </div>
+                                        )}
+                                    </div>
+
+                                    {/* Buttons */}
+                                    <div style = {{marginTop: 16, display: "flex", gap:12}}>
+                                        {canTakePhoto && (
+                                            <>
+                                                <button style={buttonStyle} onClick={capturePhoto}>
+                                                    Take Photo
+                                                </button>
+                                                <label style={{...buttonStyle, cursor: "pointer"}}>
+                                                    Upload
+                                                    <input
+                                                        type="file"
+                                                        accept="image /*"
+                                                        onChange={uploadPhoto}
+                                                        style={{ display: "none"}}
+                                                        />
+                                                </label>
+                                            </>
+                                        )}
+                                        {/* redo btn */}
+                                        {photoCount > 0 && (
+                                            <button style={{
+                                                ...buttonStyle,
+                                                fontSize: 22,
+                                                padding: "4px 10px"
+                                            }}
+                                            onClick = {redoLastPhoto}
+                                            >
+                                                ⟳
+                                            </button>
+                                        )}
+
+                                    </div>
+                                </>
                             )}
+
+                            {mode === "decorate" && (
+                                stickerOptions.map((src) => (
+                                    <img
+                                        key={src}
+                                        src={src}
+                                        alt="sticker"
+                                        onClick={() => addSticker(src)}
+                                        style={{ width: 50, cursor: "pointer"}}
+                                    />
+                                ))
+                            )
+                            }
                         </div>
+
+                        {/* Display frame */}
+                            <div>
+                                <canvas ref={canvasRef}
+                                style={{
+                                    width: 200,
+                                    height: 500,
+                                    borderRadius: 16,
+                                    boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
+                                }}
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                                />
+
+                                {mode === "decorate" && (
+                                <div style={{
+                                    marginTop: 16,
+                                    display:"flex",
+                                    justifyContent: "center",
+                                }}>
+                                    <button style={buttonStyle} onClick={downloadPhoto}>
+                                        Download
+                                    </button>
+                                </div>
+                                )}
+                            </div>
                     </div>
+                )
+                }
+            </div>
+        </div>
+    )
+}
+
+//styless
+const centerCol = {
+    display:"flex",
+    flexDirection: "column",
+    alignItems:"center",
+    gap:20
+};
+const topBar = {
+    width: 700,
+    height: 60,
+    marginBottom: 20,
+    position: "relative",
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"center",
+}
+const buttonStyle = {
+    padding: "10px 20px",
+    fontSize: 20,
+    cursor:"pointer",
+    fontFamily: "CantikaCute",
+    color:"#714a8c",
+    border:"2px solid #714a8c",
+    borderRadius: 8,
+    background: "white"
+};
+
+const row = {
+    display:"flex",
+    gap:40,
+    alignItems:"flex-start"
+};
+const frameThumb = {
+    width: 180,
+    cursor:"pointer",
+        
+}
